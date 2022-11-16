@@ -331,5 +331,7 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal(); // ЧТобы пользователь не видел как удаляется модальное окно
         }, 4000);
     }
-
+    fetch('db.json')
+        .then(data => data.json()) // Переводим в json и передаем в след функцию как res
+        .then(res => console.log(res));
 });
