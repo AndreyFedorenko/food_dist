@@ -203,52 +203,48 @@ window.addEventListener('DOMContentLoaded', () => {
             this.parent.append(element); // Добавление нового измененного объекта на страницу
         }
     }
-    // так как создание нового объекта не присваивается переменной, то он отработает всего один раз, после чего сборщик мусора его удалит
-    // Так как на него не останется входящих ссылок
-    //Пример:
-    // new MenuCard(
-    //     "img/tabs/vegy.jpg",
-    //     "vegy",
-    //     'Меню "Фитнес"',
-    //     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-    //     9,
-    //     '.menu .container'
-    // ).render();
 
-    const fitnesMenu = new MenuCard(
-        "img/tabs/vegy.jpg",
-        "vegy",
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        9,
-        '.menu .container', // Родители куда будет создаваться элемент div
-        'menu__item' // Название класса, которое присваивается
-    );
-    fitnesMenu.render(); // Вызываем метод render - который переносит все переданные аргументы на страницу
+    const getResourse = async (url) => {
+        const res = await fetch(url);
 
-    const premiumMenu = new MenuCard(
-        "img/tabs/elite.jpg",
-        "elite",
-        'Меню "Премиум"',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        14,
-        '.menu .container', // Родители куда будет создаваться элемент div
-        'menu__item' // Название класса, которое присваивается
-    );
-    premiumMenu.render(); // Вызываем метод render - который переносит все переданные аргументы на страницу
+        if (!res.ok) { // Если что-то пошло не так
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+        }
+    
+        return await res.json(); 
+       };
 
-    const postMenu = new MenuCard(
-        "img/tabs/post.jpg",
-        "post",
-        'Меню "Постное"',
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        6,
-        '.menu .container', // Родители куда будет создаваться элемент div
-        'menu__item' // Название класса, которое присваивается
-    );
-    postMenu.render(); // Вызываем метод render - который переносит все переданные аргументы на страницу
-    // чтобы наш написанные сверху код не повторять для каждого элемента, нужно написать цикл
+       getResourse('http://localhost:3000/menu') // Массив с объектами меню из сервера
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
+                // '.menu .container' это адрес родителя новых элементов parentSelector для конструктора
+            });
+        });
+// Если у нас нет шаблонизации (конструктора классов) и эти элементы будут всего 1 раз создаваться
+// getResourse('http://localhost:3000/menu') 
+//     .then(data => createCard(data));
 
+//     function createCard(data) {
+//         data.forEach(({img, altimg, title, descr, price}) => {
+//             const element = document.createElement('div');
+
+//             element.classList.add('menu__item');
+
+//             element.innerHTML = `
+//                 <img src="${img}" alt="${altimg}">
+//                 <h3 class="menu__item-subtitle">${title}</h3>
+//                 <div class="menu__item-descr">${descr}</div>
+//                 <div class="menu__item-divider"></div>
+//                 <div class="menu__item-price">
+//                     <div class="menu__item-cost">Цена:</div>
+//                     <div class="menu__item-total"><span>${price}</span> руб/день</div>
+//                 </div>
+//             `;
+
+//             document.querySelector('.menu .container').append(element);
+//         });
+//     }
 
     //------------------------------------------form server
 
@@ -261,11 +257,25 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
    forms.forEach(item => { // Перебор псевдомассива с формами
-    postData(item); // где каждая форма передается как аргумент в функцию
+    bindPostData(item); // где каждая форма передается как аргумент в функцию
    }); 
 
+   // Функция Function Expression которая будет работать с данными от сервера. url - адрес сервера. data - данные с сервера
+   const postData = async (url, data) => {
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { 
+            'Content-type': 'application/json' 
+        },
+        body: data
+    });
+
+    return await res.json(); // Полученный промис от сервера, обработка данных в json формат
+
+   };
+
     // Функция которая отвечает за постинг данных
-    function postData(form) {
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => {// e - событие которое сработает на каждой кнопке с формой
             e.preventDefault();// отменяем станд.пов брауз., чтобы при отправке не перезагружался браузер
 
@@ -281,21 +291,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
             // Передача formData - это специальный объект, который позволяет из формы быстро сформировать
             // данные которые заполнил пользователь
-            const formData = new FormData(form);// Собираем данные из формы.  работает, если в HTML в каждом input есть атрибут name (name:"name", name="phone")
-            // При использовании JSON переводим formData в объект
-            const object = {};
-            formData.forEach(function(value, key){// Перебор formData и копирование его в объект
-                object[key] = value; // object[key] - это значение свойства объекта
-            });
+            const formData = new FormData(form); // Собирает все данный с форм на странице
 
-            fetch('server.php', { // Отправка данных на сервер
-                method: "POST",
-                headers: { 
-                    'Content-type': 'application/json' 
-                },
-                body: JSON.stringify(object) 
-            })
-            .catch(data => data.text()) // перевод данных от сервера в text
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));// Переводим данные в матрицу массивов, а далее наоборот из матрицы в объект и превращаем все это в JSON
+
+            postData('http://localhost:3000/requests', json) // Вернется промис в формате json
             .then(data => { // data - данные которые возвращаются из промиса
                 console.log(data); 
                 showThanksModal(message.success); // Когда данные были отправлены на сервер
@@ -306,6 +306,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 form.reset();// очистка форм, чтобы после ввода и отправки очищался input
             });
         });
+
     }
 
     // Создание окна в котором будет писаться сообщение о статусе отправки формы
@@ -331,7 +332,7 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal(); // ЧТобы пользователь не видел как удаляется модальное окно
         }, 4000);
     }
-    fetch('db.json')
+    fetch('http://localhost:3000/menu')
         .then(data => data.json()) // Переводим в json и передаем в след функцию как res
         .then(res => console.log(res));
 });
