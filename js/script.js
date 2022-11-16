@@ -335,4 +335,6 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch('http://localhost:3000/menu')
         .then(data => data.json()) // Переводим в json и передаем в след функцию как res
         .then(res => console.log(res));
+        //test
+    console.log(form);
 });
