@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
     showTabContent();
 
     tabsParent.addEventListener('click', (event) => {
-        const target = event.target; // присваиваем переменной event.target, чтобы потом каждый раз не писать это/ и это элемент на котором сработалос событие
+        const target = event.target; // присваиваем переменной event.target, чтобы потом каждый раз не писать это/ и это элемент на котором сработало событие
 
         if (target && target.classList.contains('tabheader__item')) {// Условие для проверки, имеет ли событие в себе класс tabheader__item. Чтобы событие срабатывало именнно на этом элементе, а не на родителе
             tabs.forEach((item, i) => { //item каждый таб который будет перебираться, а i его индекс
@@ -224,7 +224,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Используем библиотеку Axios
        axios.get('http://localhost:3000/menu')
-            .then(data => { // data - данные от сервера, вторая data -  объект с картами
+            .then(data => { // data - данные от сервера, вторая data -  объект с ответом - картами
                 data.data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
                     new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
                     //'.menu .container' это адрес родителя новых элементов parentSelector для конструктора
@@ -342,4 +342,56 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal(); // ЧТобы пользователь не видел как удаляется модальное окно
         }, 4000);
     }
+
+    //----------------------------------------------slider version 1
+
+    const slides = document.querySelectorAll('.offer__slide'),
+        prew = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next'),
+        total = document.querySelector('#total'),
+        current = document.querySelector('#current');
+
+    let slideIndex = 1; // Индекс который определяет текущее положение в слайдере. Изначально он равен 1
+    
+    showSlides(slideIndex);
+
+    if (slides.length < 10) {
+        total.textContent = `0${slides.length}`;
+    } else {
+        total.textContent = slides.length;
+    }
+
+    function showSlides(n) {
+        // ЧТобы после крайнего слайда запускался первый, если листать впреред
+        if (n > slides.length) { 
+            slideIndex = 1;
+        } 
+        // Чтобы после первого открывался последний, если листать назад
+        if (n < 1) { 
+            slideIndex = slides.length;
+        }
+        // Скрыли все слайды
+        slides.forEach((item) => item.style.display = 'none'); 
+
+        // Показать первый слайд при загрузке
+        slides[slideIndex - 1].style.display = 'block'; 
+        // Условие, при котором будет изменяться номер слайда
+        if (slides.length < 10) {
+            current.textContent = `0${slideIndex}`;
+        } else {
+            current.textContent = slideIndex;
+        }
+    }
+    // Функция которая будет добавлять индекс слайдов
+    function plusSlides(n) {
+        showSlides(slideIndex += n); 
+    }
+
+    prew.addEventListener('click', () => {
+        plusSlides(-1);
+    });
+   
+    next.addEventListener('click', () => {
+    plusSlides(1);
+    });
 });
