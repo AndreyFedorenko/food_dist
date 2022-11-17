@@ -145,7 +145,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const modalTimerId = setTimeout(openModal, 50000); //через 50 сек выходит модальное окно
+    const modalTimerId = setTimeout(openModal, 5000000); //через 50 сек выходит модальное окно
     //Функция когда пользователь долистал до конца сраницы и открывается модальное окно
     //pageYOffset - показывает прокрученную часть сайта пользователем/ document.documentElement.clientHeight - видимая на данный момент чать страницы
     //без прокрутки. document.documentElement.scrollHeight - максимальная длинна всей страницы
@@ -214,13 +214,23 @@ window.addEventListener('DOMContentLoaded', () => {
         return await res.json(); 
        };
 
-       getResourse('http://localhost:3000/menu') // Массив с объектами меню из сервера
-        .then(data => {
-            data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
-                new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
-                // '.menu .container' это адрес родителя новых элементов parentSelector для конструктора
+    //    getResourse('http://localhost:3000/menu') // Массив с объектами меню из сервера
+    //     .then(data => {
+    //         data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
+    //             new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
+    //             // '.menu .container' это адрес родителя новых элементов parentSelector для конструктора
+    //         });
+    //     });
+
+// Используем библиотеку Axios
+       axios.get('http://localhost:3000/menu')
+            .then(data => { // data - данные от сервера, вторая data -  объект с картами
+                data.data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
+                    new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
+                    //'.menu .container' это адрес родителя новых элементов parentSelector для конструктора
+                    });
             });
-        });
+
 // Если у нас нет шаблонизации (конструктора классов) и эти элементы будут всего 1 раз создаваться
 // getResourse('http://localhost:3000/menu') 
 //     .then(data => createCard(data));
@@ -332,9 +342,4 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal(); // ЧТобы пользователь не видел как удаляется модальное окно
         }, 4000);
     }
-    fetch('http://localhost:3000/menu')
-        .then(data => data.json()) // Переводим в json и передаем в след функцию как res
-        .then(res => console.log(res));
-        //test
-    console.log(form);
 });
