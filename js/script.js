@@ -357,6 +357,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (slides.length < 10) {
         total.textContent = `0${slides.length}`;
+        console.log(slides.length);
     } else {
         total.textContent = slides.length;
     }
@@ -394,4 +395,8 @@ window.addEventListener('DOMContentLoaded', () => {
     next.addEventListener('click', () => {
     plusSlides(1);
     });
+
+    //----------------------------------slider version 2
+
+    
 });
