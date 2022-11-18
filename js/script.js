@@ -345,58 +345,138 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //----------------------------------------------slider version 1
 
+    // const slides = document.querySelectorAll('.offer__slide'),
+    //     prew = document.querySelector('.offer__slider-prev'),
+    //     next = document.querySelector('.offer__slider-next'),
+    //     total = document.querySelector('#total'),
+    //     current = document.querySelector('#current');
+
+    // let slideIndex = 1; // Индекс который определяет текущее положение в слайдере. Изначально он равен 1
+    
+    // showSlides(slideIndex);
+
+    // if (slides.length < 10) {
+    //     total.textContent = `0${slides.length}`;
+    //     console.log(slides.length);
+    // } else {
+    //     total.textContent = slides.length;
+    // }
+
+    // function showSlides(n) {
+    //     // ЧТобы после крайнего слайда запускался первый, если листать впреред
+    //     if (n > slides.length) { 
+    //         slideIndex = 1;
+    //     } 
+    //     // Чтобы после первого открывался последний, если листать назад
+    //     if (n < 1) { 
+    //         slideIndex = slides.length;
+    //     }
+    //     // Скрыли все слайды
+    //     slides.forEach((item) => item.style.display = 'none'); 
+
+    //     // Показать первый слайд при загрузке
+    //     slides[slideIndex - 1].style.display = 'block'; 
+    //     // Условие, при котором будет изменяться номер слайда
+    //     if (slides.length < 10) {
+    //         current.textContent = `0${slideIndex}`;
+    //     } else {
+    //         current.textContent = slideIndex;
+    //     }
+    // }
+    // // Функция которая будет добавлять индекс слайдов
+    // function plusSlides(n) {
+    //     showSlides(slideIndex += n); 
+    // }
+
+    // prew.addEventListener('click', () => {
+    //     plusSlides(-1);
+    // });
+   
+    // next.addEventListener('click', () => {
+    // plusSlides(1);
+    // });
+
+    //----------------------------------slider version 2
+
     const slides = document.querySelectorAll('.offer__slide'),
         prew = document.querySelector('.offer__slider-prev'),
         next = document.querySelector('.offer__slider-next'),
         total = document.querySelector('#total'),
-        current = document.querySelector('#current');
+        current = document.querySelector('#current'),
+        slidesWrapper = document.querySelector('.offer__slider-wrapper'), // Родитель слайдов
+        slidesField = document.querySelector('.offer__slider-inner'), // Элемент, где будет видно все слайды
+        width = window.getComputedStyle(slidesWrapper).width; // Размеры окна элемента где находятся слайды
 
     let slideIndex = 1; // Индекс который определяет текущее положение в слайдере. Изначально он равен 1
-    
-    showSlides(slideIndex);
+    let offset = 0; // Переменная куда будет записываться значение отступа в стороны
 
     if (slides.length < 10) {
         total.textContent = `0${slides.length}`;
-        console.log(slides.length);
+        current.textContent = `0${slideIndex}`;
     } else {
         total.textContent = slides.length;
+        current.textContent = slideIndex;
     }
 
-    function showSlides(n) {
-        // ЧТобы после крайнего слайда запускался первый, если листать впреред
-        if (n > slides.length) { 
-            slideIndex = 1;
-        } 
-        // Чтобы после первого открывался последний, если листать назад
-        if (n < 1) { 
-            slideIndex = slides.length;
+    // Помещаем все слайды в slidesField. 100% умноженное на количество слайдов - общая длинна рулетки слайдов
+    slidesField.style.width = 100 * slides.length + '%'; 
+    //С помощью CSS стиля flex делаем так, чтобы слаыйды были горизонтально
+    slidesField.style.display = 'flex';
+    //Добавление анимации для плавной прокрутки слайдов
+    slidesField.style.transition = '0.5s all';
+    // Скрываем те элементы которые не попадают в область видимости. Чтобы было видно один, а остальные скрывались
+    slidesWrapper.style.overflow = 'hidden';
+    // ЧТобы у всех слайдов была одинаковая ширина. Переберем все слайды и каждому слайду установим определенную ширину width - окна где они показываются на странице
+    slides.forEach(slide => {
+        slide.style.width = width;
+    });
+    // translateX - трансформирование по оси Х `- ${offset}` сдвиг вправо
+    next.addEventListener('click', () => {
+        // +width.slice(0, width.length - 2) =  в width будет записываться строчные данные Для CSS (500px). Переводим их в числовые
+        // методом slice вырезаем от 0 символа до Двух последних символов (width.length - 2) получим 500
+        if (offset == (+width.slice(0, width.length - 2) * (slides.length - 1))) { // Если значение отступа равно длинне слайда * на кол-во слайдов -1
+            offset = 0; // Долистали до самого конца и вернулись в начало
+        } else { // Если не последний слайд
+            offset += +width.slice(0, width.length - 2); // Добавим смещение
         }
-        // Скрыли все слайды
-        slides.forEach((item) => item.style.display = 'none'); 
 
-        // Показать первый слайд при загрузке
-        slides[slideIndex - 1].style.display = 'block'; 
-        // Условие, при котором будет изменяться номер слайда
+        slidesField.style.transform = `translateX(-${offset}px)`;
+        // Если Значение индекса равен количеству слайдов - дошли до конца,
+        if (slideIndex == slides.length) { 
+            slideIndex = 1; // То откроется первый слайд
+        } else { // Если не дошли до конца
+            slideIndex++; // Тогда индекс увеличить на еденицу
+        }
+        // Добавление 0 если индекс слайда меньше 10
         if (slides.length < 10) {
             current.textContent = `0${slideIndex}`;
         } else {
             current.textContent = slideIndex;
         }
-    }
-    // Функция которая будет добавлять индекс слайдов
-    function plusSlides(n) {
-        showSlides(slideIndex += n); 
-    }
+    });
 
     prew.addEventListener('click', () => {
-        plusSlides(-1);
-    });
-   
-    next.addEventListener('click', () => {
-    plusSlides(1);
-    });
+        // +width.slice(0, width.length - 2) =  в width будет записываться строчные данные Для CSS (500px). Переводим их в числовые
+        // методом slice вырезаем от 0 символа до Двух последних символов (width.length - 2) получим 500
+        if (offset == 0) { // Долистали до самого начала
+            offset = +width.slice(0, width.length - 2) * (slides.length - 1); // Формала для определения последнего слайда Вернуться на последний слайд
+        } else { // Если не первый слайд
+            offset -= +width.slice(0, width.length - 2); //Вычтем смещение смещение
+        }
 
-    //----------------------------------slider version 2
+        slidesField.style.transform = `translateX(-${offset}px)`;
 
-    
+        // Если Значение индекса равен 1 - дошли до Начала,
+        if (slideIndex == 1) { 
+            slideIndex = slides.length; // То откроется последний слайд
+        } else { // Если не дошли до начала
+            slideIndex--; // Тогда индекс уменьшить на еденицу
+        }
+        // Добавление 0 если индекс слайда меньше 10
+        if (slides.length < 10) {
+            current.textContent = `0${slideIndex}`;
+        } else {
+            current.textContent = slideIndex;
+        }
+    });
 });
