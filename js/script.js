@@ -1,7 +1,5 @@
 'use strict';
 
-const e = require("express");
-
 window.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------Tabs
     const tabs = document.querySelectorAll('.tabheader__item'), //Слова из меню табов питания (Фитнес, Премиум, Постное, Сбалансированное)
@@ -398,7 +396,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // plusSlides(1);
     // });
 
-    //----------------------------------slider version 2
+    // ----------------------------------slider version 2
 
     // const slides = document.querySelectorAll('.offer__slide'),
     //     prew = document.querySelector('.offer__slider-prev'),
@@ -482,7 +480,7 @@ window.addEventListener('DOMContentLoaded', () => {
     //     }
     // });
 
-    //--------------------------------------slide point
+    // //--------------------------------------slide point
 
     const slides = document.querySelectorAll('.offer__slide'),
         slider = document.querySelector('.offer__slider'), // Родитель всего элемента где слайды
