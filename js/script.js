@@ -566,7 +566,7 @@ window.addEventListener('DOMContentLoaded', () => {
         dots.push(dot); // Добавляем в массив dots все точки
     }
     // Функция которая будет приобразовывать в числовой тип данных и заменять все не числа пустой строкой
-    function deleteStr (str) {
+    function deleteStr(str) {
        return +str.replace(/\D/g, '');
     }
     //Функция добавляющая ноль к не десятичному числу
@@ -674,4 +674,79 @@ window.addEventListener('DOMContentLoaded', () => {
             dots[slideIndex - 1].style.opacity = 1;
         });
     });
+
+    //----------------------------calc
+
+    const result = document.querySelector('.calculating__result span');
+    // Устанвливаем дефолтные значения sex и ratio чтобы при первом запуске было какое-то начальное значение
+    let sex = 'female', height, weight, age, ratio = 1.375;
+
+    //Функция которая занимается подсчетами с формулой
+    function calkTotal() {
+        if (!sex || !height || !weight || !age || !ratio) {
+            result.textContent = 'Ввели не все данные';
+            return;
+        } else {
+            if (sex === 'female') {
+                // округляем до сотых с помощью Math.round
+                result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+            } else {
+                result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+            }
+        }
+    }
+
+    calkTotal();
+
+    //Функция для получения значений со страницы
+    function getStaticInformation(parentSelector, activeClass) {
+        // получение родителя элементов которые могут быть активными (кликать по ним).
+        const elements = document.querySelectorAll(`${parentSelector} div`);
+        // перебираем все элементы родителя и на каждый вешаем обработчик события
+        elements.forEach(elem => {
+            elem.addEventListener('click', (e) => {
+                // Если у элемента есть атрибут data-ratio то будут выполняться действия. Выбор активности на странице
+                if (e.target.getAttribute('data-ratio')) {
+                    ratio = +e.target.getAttribute('data-ratio'); // Значение активности, у элемента на который кликнули, присваивается в ratio
+                } else { // Если нет атрибута data-ratio. Выбор пола
+                    sex = e.target.getAttribute('id'); // присваивание в sex атрибута male или female
+                }
+                // Удаляем класс активности у всех элементов
+                elements.forEach(elem => {
+                    elem.classList.remove(activeClass);
+                });
+                // Добавляем класс активности на тот элемент, на котором произошло событие
+                e.target.classList.add(activeClass);
+    
+                calkTotal();
+            });
+        });
+    }
+
+    getStaticInformation('#gender', 'calculating__choose-item_active'); //# gender - родитель переключателей пола. Второй аргумент класс активности
+    getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active'); // calculating__choose_big - второй класс родителя всех переключателей активности
+
+    // Функция которая будет обрабатывать каждый отдельный input
+    function getDynamicInformation (selector) {
+        const input = document.querySelector(selector);
+        // обработчик события на input - что ввел пользователь
+        input.addEventListener('input', () => {
+            // Определение по идентификатору
+            switch(input.getAttribute('id')) {
+                case 'height': // Если идентификатор height тогда
+                    height = +input.value; // присваиваем переменной значение что ввел пользователь
+                    break;
+                case 'weight':
+                    weight = +input.value;
+                    break;
+                case 'age':
+                    age = +input.value;
+                    break;
+            }
+            calkTotal();
+        });
+    }
+    getDynamicInformation ('#height');
+    getDynamicInformation ('#weight');
+    getDynamicInformation ('#age');
 });
