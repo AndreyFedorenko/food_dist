@@ -214,13 +214,13 @@ window.addEventListener('DOMContentLoaded', () => {
         return await res.json(); 
        };
 
-    //    getResourse('http://localhost:3000/menu') // Массив с объектами меню из сервера
-    //     .then(data => {
-    //         data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
-    //             new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
-    //             // '.menu .container' это адрес родителя новых элементов parentSelector для конструктора
-    //         });
-    //     });
+//    getResourse('http://localhost:3000/menu') // Массив с объектами меню из сервера
+//     .then(data => {
+//         data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
+//             new MenuCard(img, altimg, title, descr, price, '.menu .container').render(); // передаем в метод который будет их подставлять в конструктор
+//             // '.menu .container' это адрес родителя новых элементов parentSelector для конструктора
+//         });
+//     });
 
 // Используем библиотеку Axios
        axios.get('http://localhost:3000/menu')
@@ -231,7 +231,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     });
             });
 
-// Если у нас нет шаблонизации (конструктора классов) и эти элементы будут всего 1 раз создаваться
+// Если у нас нет шаблонизации (конструктора классов) или эти элементы будут всего 1 раз создаваться
 // getResourse('http://localhost:3000/menu') 
 //     .then(data => createCard(data));
 
@@ -565,15 +565,34 @@ window.addEventListener('DOMContentLoaded', () => {
         indicators.append(dot);
         dots.push(dot); // Добавляем в массив dots все точки
     }
-
+    // Функция которая будет приобразовывать в числовой тип данных и заменять все не числа пустой строкой
+    function deleteStr (str) {
+       return +str.replace(/\D/g, '');
+    }
+    //Функция добавляющая ноль к не десятичному числу
+    const getZeroNumbers = () => {       
+        if (slides.length < 10) {
+            current.textContent = `0${slideIndex}`;
+        } else {
+            current.textContent = slideIndex;
+        }
+    };
+    // Функция которая делает все доты полупрозрачными кроме активной
+    const dotsOpacity = (i) => {
+        i.forEach(dot => {
+            dot.style.opacity = '.5'; 
+            // Делаем слайд непрозрачным
+            dots[slideIndex - 1].style.opacity = 1;
+        });
+    };
     // translateX - трансформирование по оси Х `- ${offset}` сдвиг вправо
     next.addEventListener('click', () => {
         // +width.slice(0, width.length - 2) =  в width будет записываться строчные данные Для CSS (500px). Переводим их в числовые
-        // методом slice вырезаем от 0 символа до Двух последних символов (width.length - 2) получим 500
-        if (offset == (+width.slice(0, width.length - 2) * (slides.length - 1))) { // Если значение отступа равно длинне слайда * на кол-во слайдов -1
+        // Методом replace() заменить все нечисла пустой строкой
+        if (offset == (deleteStr(width) * (slides.length - 1))) { // Если значение отступа равно длинне слайда * на кол-во слайдов -1
             offset = 0; // Долистали до самого конца и вернулись в начало
         } else { // Если не последний слайд
-            offset += +width.slice(0, width.length - 2); // Добавим смещение
+            offset += deleteStr(width); // Добавим смещение
         }
 
         slidesField.style.transform = `translateX(-${offset}px)`;
@@ -583,25 +602,27 @@ window.addEventListener('DOMContentLoaded', () => {
         } else { // Если не дошли до конца
             slideIndex++; // Тогда индекс увеличить на еденицу
         }
+        getZeroNumbers();
         // Добавление 0 если индекс слайда меньше 10
-        if (slides.length < 10) {
-            current.textContent = `0${slideIndex}`;
-        } else {
-            current.textContent = slideIndex;
-        }
-        // Перебираем массив со всеми точками и устанавливаем и значение opacity = .5 - непрозрачность
-        dots.forEach(dot => dot.style.opacity = '.5'); 
-        // Делаем слайд непрозрачным
-        dots[slideIndex - 1].style.opacity = 1;
+        // if (slides.length < 10) {
+        //     current.textContent = `0${slideIndex}`;
+        // } else {
+        //     current.textContent = slideIndex;
+        // }
+        dotsOpacity();
+        // // Перебираем массив со всеми точками и устанавливаем и значение opacity = .5 - непрозрачность
+        // dots.forEach(dot => dot.style.opacity = '.5'); 
+        // // Делаем слайд непрозрачным
+        // dots[slideIndex - 1].style.opacity = 1;
     });
 
     prew.addEventListener('click', () => {
         // +width.slice(0, width.length - 2) =  в width будет записываться строчные данные Для CSS (500px). Переводим их в числовые
-        // методом slice вырезаем от 0 символа до Двух последних символов (width.length - 2) получим 500
+        // Методом функцией deleteStr заменить все нечисла пустой строкой
         if (offset == 0) { // Долистали до самого начала
-            offset = +width.slice(0, width.length - 2) * (slides.length - 1); // Формула для определения последнего слайда Вернуться на последний слайд
+            offset = deleteStr(width) * (slides.length - 1); // Формула для определения последнего слайда Вернуться на последний слайд
         } else { // Если не первый слайд
-            offset -= +width.slice(0, width.length - 2); //Вычтем смещение смещение
+            offset -= deleteStr(width); //Вычтем смещение смещение
         }
 
         slidesField.style.transform = `translateX(-${offset}px)`; // Определение смещения
@@ -614,15 +635,16 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         // Определение текущего слайда
         // Добавление 0 если индекс слайда меньше 10
-        if (slides.length < 10) {
-            current.textContent = `0${slideIndex}`;
-        } else {
-            current.textContent = slideIndex;
-        }
-
-        dots.forEach(dot => dot.style.opacity = '.5'); 
-        // Делаем слайд непрозрачным
-        dots[slideIndex - 1].style.opacity = 1;
+        getZeroNumbers();
+        // if (slides.length < 10) {
+        //     current.textContent = `0${slideIndex}`;
+        // } else {
+        //     current.textContent = slideIndex;
+        // }
+        dotsOpacity();
+        // dots.forEach(dot => dot.style.opacity = '.5'); 
+        // // Делаем слайд непрозрачным
+        // dots[slideIndex - 1].style.opacity = 1;
     });
 
     // Кликаем на точку и переключаемся между слайдами
@@ -633,19 +655,20 @@ window.addEventListener('DOMContentLoaded', () => {
             const slideTo = e.target.getAttribute('data-slide-to'); //e.target - тот элемент на котором было совершено событие
 
             slideIndex = slideTo; // Кликнули на 4 точку, в slideIndex присвоится 4 - откроется 4 картинка
-            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+            offset = deleteStr(width) * (slideTo - 1);
 
             slidesField.style.transform = `translateX(-${offset}px)`;
 
             // Определение текущего слайда
             // Добавление 0 если индекс слайда меньше 10
-            if (slides.length < 10) {
-                current.textContent = `0${slideIndex}`;
-            } else {
-                current.textContent = slideIndex;
-            }
-
-            // Перебираем массив со всеми точками и устанавливаем и значение opacity = .5 - непрозрачность
+            getZeroNumbers();
+            // if (slides.length < 10) {
+            //     current.textContent = `0${slideIndex}`;
+            // } else {
+            //     current.textContent = slideIndex;
+            // }
+     
+            //Перебираем массив со всеми точками и устанавливаем и значение opacity = .5 - непрозрачность
             dots.forEach(dot => dot.style.opacity = ".5"); 
             // Делаем слайд непрозрачным
             dots[slideIndex - 1].style.opacity = 1;
