@@ -1,16 +1,19 @@
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
+    // container - родитель всех элементов слайдов, slide - каждый отдельный слайд, nextArrow - следующий слайд кнопка, 
+    //prevArrow - предыдущая картинка, totalCounter - общее кол-во картинок показ.на странице
+    // currentCounter - номер текущей картинки, wrapper - родитель всех слайдов(картинок), field - область видимости картинок
     // //--------------------------------------slide point
 
-    const slides = document.querySelectorAll('.offer__slide'),
-        slider = document.querySelector('.offer__slider'), // Родитель всего элемента где слайды
-        prew = document.querySelector('.offer__slider-prev'),
-        next = document.querySelector('.offer__slider-next'),
-        total = document.querySelector('#total'),
-        current = document.querySelector('#current'),
-        slidesWrapper = document.querySelector('.offer__slider-wrapper'), // Родитель слайдов
-        slidesField = document.querySelector('.offer__slider-inner'), // Элемент, где будет видно все слайды
+    const slider = document.querySelector(container), // Родитель всего элемента где слайды
+        slides = document.querySelectorAll(slide),
+        next = document.querySelector(nextArrow),
+        prew = document.querySelector(prevArrow),
+        total = document.querySelector(totalCounter),
+        current = document.querySelector(currentCounter),
+        slidesWrapper = document.querySelector(wrapper), // Родитель слайдов
+        slidesField = document.querySelector(field), // Элемент, где будет видно все слайды
         width = window.getComputedStyle(slidesWrapper).width; // Размеры окна элемента где находятся слайды
-
+    
     let slideIndex = 1; // Индекс который определяет текущее положение в слайдере. Изначально он равен 1
     let offset = 0; // Переменная куда будет записываться значение отступа в стороны
 
@@ -195,4 +198,4 @@ function slider() {
     });
 }
 
-module.exports = slider;
+export default slider;

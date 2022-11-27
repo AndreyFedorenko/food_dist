@@ -1,8 +1,4 @@
-function timer() {
-        // ----------------------------------------------Timer
-
-    const deadLine = '2022-12-30';
-
+function timer(id, deadLine) {
     // Функция которая будет определять разницу между deadLine и текущим времинем пользователя
     function getTimeRemaining(endtime) {
          const t = Date.parse(endtime) - Date.parse(new Date()); // Получаем кол-во мс из deadLine и вычитаем из реальной даты
@@ -61,7 +57,7 @@ function timer() {
             }
         }
     }
-    setClock('.timer', deadLine);
+    setClock(id, deadLine);
 }
 
-module.exports = timer;
+export default timer;

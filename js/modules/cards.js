@@ -1,3 +1,5 @@
+import {getResourse} from '../services/services';
+
 function cards() {
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) { // ...classes будущие параметры которые будут в []
@@ -40,16 +42,6 @@ function cards() {
         }
     }
 
-    const getResourse = async (url) => {
-        const res = await fetch(url);
-
-        if (!res.ok) { // Если что-то пошло не так
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
-    
-        return await res.json(); 
-       };
-
     getResourse('http://localhost:3000/menu') // Массив с объектами меню из сервера
         .then(data => {
             data.forEach(({img, altimg, title, descr, price}) => { // Перебираем со всех элементов массива, которые являются объектами значения их свойств с помощью деструктуризации
@@ -59,4 +51,4 @@ function cards() {
         });
 }
 
-module.exports = cards;
+export default cards;

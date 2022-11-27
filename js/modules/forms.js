@@ -1,7 +1,10 @@
-function forms() {
+import {closeModal, openModal} from './modal';
+import {postData} from '../services/services'; // .. выход из папки  (modules) где находится файл forms.js чтобы перейти в папку services
+
+function forms(formSelector,modalTimerId) {
     //------------------------------------------form server
 
-    const forms = document.querySelectorAll('form');
+    const forms = document.querySelectorAll(formSelector);
 
     const message = { // список сообщений при отправке формы пользователем
         loading: 'img/form/spinner.svg',
@@ -12,20 +15,6 @@ function forms() {
     forms.forEach(item => { // Перебор псевдомассива с формами
     bindPostData(item); // где каждая форма передается как аргумент в функцию
     }); 
-
-    // Функция Function Expression которая будет работать с данными от сервера. url - адрес сервера. data - данные с сервера
-    const postData = async (url, data) => {
-    const res = await fetch(url, {
-        method: "POST",
-        headers: { 
-            'Content-type': 'application/json' 
-        },
-        body: data
-    });
-
-    return await res.json(); // Полученный промис от сервера, обработка данных в json формат
-
-    };
 
     // Функция которая отвечает за постинг данных
     function bindPostData(form) {
@@ -66,7 +55,7 @@ function forms() {
     function showThanksModal(message) {
         const prevModalDialog = document.querySelector('.modal__dialog'); // Модальное окно, которое уже есть в HTML 
         prevModalDialog.classList.add('hide'); //Добавляем класс который скрывает из CSS
-        openModal(); // Функция которая отвечает за открытие модальных окон
+        openModal('.modal', modalTimerId); // Функция которая отвечает за открытие модальных окон
 
         const thanksModal = document.createElement('div');
         thanksModal.classList.add('modal__dialog'); // добавляем класс который был в CSS новому элементу (чтобы они выглядели одинаково, так как перадаются все CSS стили)
@@ -82,9 +71,9 @@ function forms() {
             thanksModal.remove();// Удаление нашего div через 4 сек gjckt njuj rfr jnhf,jnftn aeyrwbz
             prevModalDialog.classList.add('show');// Добалвяем класс
             prevModalDialog.classList.remove('hide'); // Удаляем класс невидимости
-            closeModal(); // ЧТобы пользователь не видел как удаляется модальное окно
+            closeModal('.modal'); // ЧТобы пользователь не видел как удаляется модальное окно
         }, 4000);
     }
 }
 
-module.exports = forms;
+export default forms;
