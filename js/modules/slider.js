@@ -104,8 +104,8 @@ function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCo
         i.forEach(dot => {
             dot.style.opacity = '.5'; 
             // Делаем слайд непрозрачным
-            dots[slideIndex - 1].style.opacity = 1;
         });
+        dots[slideIndex - 1].style.opacity = 1;
     };
     // translateX - трансформирование по оси Х `- ${offset}` сдвиг вправо
     next.addEventListener('click', () => {
@@ -131,7 +131,7 @@ function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCo
         // } else {
         //     current.textContent = slideIndex;
         // }
-        dotsOpacity();
+        dotsOpacity(dots);
         // // Перебираем массив со всеми точками и устанавливаем и значение opacity = .5 - непрозрачность
         // dots.forEach(dot => dot.style.opacity = '.5'); 
         // // Делаем слайд непрозрачным
@@ -163,7 +163,7 @@ function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCo
         // } else {
         //     current.textContent = slideIndex;
         // }
-        dotsOpacity();
+        dotsOpacity(dots);
         // dots.forEach(dot => dot.style.opacity = '.5'); 
         // // Делаем слайд непрозрачным
         // dots[slideIndex - 1].style.opacity = 1;
